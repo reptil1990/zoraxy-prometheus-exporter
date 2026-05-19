@@ -241,6 +241,7 @@ func main() {
 		Author:        "reptil1990",
 		AuthorContact: "reptil1990@me.com",
 		Description:   "Exports Zoraxy statistical analysis data as Prometheus metrics",
+		URL:           "https://github.com/reptil1990/zoraxy-prometheus-exporter",
 		Type:          plugin.PluginType_Utilities,
 		VersionMajor:  1,
 		VersionMinor:  0,

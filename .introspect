@@ -1,0 +1,31 @@
+{
+ "id": "com.example.zoraxy.prometheus-exporter",
+ "name": "Prometheus Exporter",
+ "author": "reptil1990",
+ "author_contact": "reptil1990@me.com",
+ "description": "Exports Zoraxy statistical analysis data as Prometheus metrics",
+ "url": "https://github.com/reptil1990/zoraxy-prometheus-exporter",
+ "type": 1,
+ "version_major": 1,
+ "version_minor": 0,
+ "version_patch": 0,
+ "static_capture_paths": null,
+ "static_capture_ingress": "",
+ "dynamic_capture_sniff": "",
+ "dynamic_capture_ingress": "",
+ "ui_path": "/ui",
+ "subscription_path": "",
+ "subscriptions_events": null,
+ "permitted_api_endpoints": [
+  {
+   "method": "GET",
+   "endpoint": "/plugin/api/stats/summary",
+   "reason": "Fetch daily request statistics for Prometheus export"
+  },
+  {
+   "method": "GET",
+   "endpoint": "/plugin/api/stats/netstat",
+   "reason": "Fetch network interface statistics for Prometheus export"
+  }
+ ]
+}
