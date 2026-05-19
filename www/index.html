@@ -11,7 +11,11 @@ body.darkTheme .ui.header,
 body.darkTheme h4,
 body.darkTheme p,
 body.darkTheme code,
-body.darkTheme pre { color: #fafafa !important; }
+body.darkTheme pre,
+body.darkTheme .ui.statistic > .value,
+body.darkTheme .ui.statistic > .label,
+body.darkTheme .ui.statistics .statistic > .value,
+body.darkTheme .ui.statistics .statistic > .label { color: #fafafa !important; }
 code { font-size: 0.95em; }
 </style>
 </head>
@@ -19,9 +23,15 @@ code { font-size: 0.95em; }
 <link rel="stylesheet" href="/darktheme.css">
 <script src="/script/darktheme.js"></script>
 <script>
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("darkTheme");
+  function applyTheme() {
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("darkTheme");
+    } else {
+      document.body.classList.remove("darkTheme");
+    }
   }
+  applyTheme();
+  window.addEventListener("storage", applyTheme);
 </script>
 <div class="ui container" style="padding-top:1.5em">
 

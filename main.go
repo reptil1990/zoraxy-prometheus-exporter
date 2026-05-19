@@ -245,7 +245,7 @@ func main() {
 		Type:          plugin.PluginType_Utilities,
 		VersionMajor:  1,
 		VersionMinor:  0,
-		VersionPatch:  4,
+		VersionPatch:  5,
 		UIPath:        UI_PATH,
 		PermittedAPIEndpoints: []plugin.PermittedAPIEndpoint{
 			{
