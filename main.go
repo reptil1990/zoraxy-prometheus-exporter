@@ -20,7 +20,7 @@ import (
 var webContent embed.FS
 
 const (
-	PLUGIN_ID    = "com.example.zoraxy.prometheus-exporter"
+	PLUGIN_ID    = "de.reptilfpv.zoraxy.prometheus-exporter"
 	UI_PATH      = "/ui"
 	METRICS_PATH = "/metrics"
 )
