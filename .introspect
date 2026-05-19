@@ -1,8 +1,8 @@
 {
- "id": "de.reptilfpv.zoraxy.prometheus-exporter",
+ "id": "prometheus-exporter",
  "name": "Prometheus Exporter",
  "author": "reptil1990",
- "author_contact": "reptil1990@me.de",
+ "author_contact": "reptil1990@me.com",
  "description": "Exports Zoraxy statistical analysis data as Prometheus metrics",
  "url": "https://github.com/reptil1990/zoraxy-prometheus-exporter",
  "type": 1,

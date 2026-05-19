@@ -78,22 +78,22 @@ jobs:
           go-version: '1.23.6'
 
       - name: Build (linux_386)
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./build/de.reptilfpv.zoraxy.prometheus-exporter_linux_386
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./build/prometheus-exporter_linux_386
 
       - name: Build (linux_amd64)
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./build/de.reptilfpv.zoraxy.prometheus-exporter_linux_amd64
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./build/prometheus-exporter_linux_amd64
 
       - name: Build (linux_arm)
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o ./build/de.reptilfpv.zoraxy.prometheus-exporter_linux_arm
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o ./build/prometheus-exporter_linux_arm
 
       - name: Build (linux_arm64)
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ./build/de.reptilfpv.zoraxy.prometheus-exporter_linux_arm64
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ./build/prometheus-exporter_linux_arm64
 
       - name: Build (linux_riscv64)
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=riscv64 go build -o ./build/de.reptilfpv.zoraxy.prometheus-exporter_linux_riscv64
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=riscv64 go build -o ./build/prometheus-exporter_linux_riscv64
 
       - name: Build (windows_amd64)
-        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./build/de.reptilfpv.zoraxy.prometheus-exporter_windows_amd64.exe
+        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./build/prometheus-exporter_windows_amd64.exe
 
       - name: Generate tag
         continue-on-error: true
