@@ -6,15 +6,23 @@
 <link rel="stylesheet" href="/script/semantic/semantic.min.css">
 <link rel="stylesheet" href="/main.css">
 <style>
-body { background: none; color: var(--text_color); }
-h2.ui.header, h4 { color: var(--text_color) !important; }
-p, code, pre { color: var(--text_color); }
+body { background: none; }
+body.darkTheme .ui.header,
+body.darkTheme h4,
+body.darkTheme p,
+body.darkTheme code,
+body.darkTheme pre { color: #fafafa !important; }
 code { font-size: 0.95em; }
 </style>
 </head>
 <body>
 <link rel="stylesheet" href="/darktheme.css">
 <script src="/script/darktheme.js"></script>
+<script>
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("darkTheme");
+  }
+</script>
 <div class="ui container" style="padding-top:1.5em">
 
   <h2 class="ui header">Prometheus Exporter</h2>
