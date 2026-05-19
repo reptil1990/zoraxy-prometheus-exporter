@@ -59,7 +59,7 @@ code { font-size: 0.95em; }
 </div>
 
 <script>
-  fetch("/ui/status")
+  fetch("status")
     .then(r => r.json())
     .then(d => {
       const box = document.getElementById("status-box");
