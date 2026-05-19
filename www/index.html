@@ -6,8 +6,9 @@
 <link rel="stylesheet" href="/script/semantic/semantic.min.css">
 <link rel="stylesheet" href="/main.css">
 <style>
-body { background: none; }
-code { font-size: 0.95em; }
+body { background: none; color: var(--text_color); }
+code { font-size: 0.95em; color: var(--text_color); }
+pre { color: var(--text_color); }
 </style>
 </head>
 <body>
@@ -25,7 +26,7 @@ code { font-size: 0.95em; }
   <div class="ui segment">
     <h4>Metrics Endpoint</h4>
     <code id="metrics-url">http://&lt;host&gt;:9100/metrics</code>
-    <p style="margin-top:.5em;color:gray;font-size:.9em">
+    <p style="margin-top:.5em;color:var(--text_color);opacity:0.6;font-size:.9em">
       Configure Prometheus to scrape this endpoint. Stats are refreshed every 30 seconds.
     </p>
   </div>
