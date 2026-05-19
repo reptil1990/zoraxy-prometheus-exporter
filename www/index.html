@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Prometheus Exporter</title>
+<link rel="stylesheet" href="/script/semantic/semantic.min.css">
+<link rel="stylesheet" href="/main.css">
+<style>
+body { background: none; }
+code { font-size: 0.95em; }
+</style>
+</head>
+<body>
+<link rel="stylesheet" href="/darktheme.css">
+<script src="/script/darktheme.js"></script>
+<div class="ui container" style="padding-top:1.5em">
+
+  <h2 class="ui header">Prometheus Exporter</h2>
+  <p>Exposes Zoraxy statistical analysis data as Prometheus metrics.</p>
+
+  <div id="status-box" class="ui yellow message">
+    <i class="clock icon"></i> Loading status...
+  </div>
+
+  <div class="ui segment">
+    <h4>Metrics Endpoint</h4>
+    <code id="metrics-url">http://&lt;host&gt;:9100/metrics</code>
+    <p style="margin-top:.5em;color:gray;font-size:.9em">
+      Configure Prometheus to scrape this endpoint. Stats are refreshed every 30 seconds.
+    </p>
+  </div>
+
+  <div class="ui segment">
+    <h4>Today's Requests</h4>
+    <div class="ui three statistics">
+      <div class="statistic">
+        <div class="value" id="stat-total">-</div>
+        <div class="label">Total</div>
+      </div>
+      <div class="statistic">
+        <div class="value" id="stat-valid">-</div>
+        <div class="label">Valid</div>
+      </div>
+      <div class="statistic">
+        <div class="value" id="stat-error">-</div>
+        <div class="label">Errors</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ui segment">
+    <h4>Prometheus Scrape Config</h4>
+    <pre style="background:var(--theme_highlight);padding:1em;border-radius:4px;font-size:.9em">scrape_configs:
+  - job_name: zoraxy
+    static_configs:
+      - targets: ['&lt;host&gt;:9100']</pre>
+  </div>
+
+</div>
+
+<script>
+  fetch("/ui/status")
+    .then(r => r.json())
+    .then(d => {
+      const box = document.getElementById("status-box");
+      if (d.error) {
+        box.className = "ui red message";
+        box.innerHTML = '<i class="warning icon"></i>Fetch error: ' + d.error;
+      } else if (d.last_update) {
+        box.className = "ui green message";
+        box.innerHTML = '<i class="check icon"></i>Last updated: ' + d.last_update;
+      }
+      document.getElementById("metrics-url").textContent =
+        "http://" + location.hostname + ":" + d.metrics_port + "/metrics";
+      document.getElementById("stat-total").textContent = d.total ?? "-";
+      document.getElementById("stat-valid").textContent = d.valid ?? "-";
+      document.getElementById("stat-error").textContent = d.error_count ?? "-";
+    })
+    .catch(() => {
+      document.getElementById("status-box").className = "ui red message";
+      document.getElementById("status-box").textContent = "Could not reach plugin status API.";
+    });
+</script>
+</body>
+</html>

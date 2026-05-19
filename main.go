@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,6 +15,9 @@ import (
 
 	plugin "github.com/reptil1990/zoraxy-prometheus-exporter/mod/zoraxy_plugin"
 )
+
+//go:embed www/*
+var webContent embed.FS
 
 const (
 	PLUGIN_ID    = "com.example.zoraxy.prometheus-exporter"
@@ -182,7 +186,8 @@ func handleMetrics(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "zoraxy_stats_last_update_unix %d\n", state.lastUpdate.Unix())
 }
 
-func handleUI(metricsPort int) http.HandlerFunc {
+// handleStatus serves a JSON status object consumed by the UI.
+func handleStatus(metricsPort int) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		state.mu.RLock()
 		lastUpdate := state.lastUpdate
@@ -195,49 +200,20 @@ func handleUI(metricsPort int) http.HandlerFunc {
 		}
 		state.mu.RUnlock()
 
-		var statusDiv string
-		switch {
-		case lastError != "":
-			statusDiv = `<div class="ui red message"><i class="warning icon"></i>Fetch error: ` + lastError + `</div>`
-		case !lastUpdate.IsZero():
-			statusDiv = `<div class="ui green message"><i class="check icon"></i>Last updated: ` + lastUpdate.Format("2006-01-02 15:04:05") + `</div>`
-		default:
-			statusDiv = `<div class="ui yellow message"><i class="clock icon"></i>Waiting for first fetch...</div>`
+		resp := map[string]any{
+			"metrics_port": metricsPort,
+			"total":        total,
+			"valid":        valid,
+			"error_count":  errs,
+		}
+		if lastError != "" {
+			resp["error"] = lastError
+		} else if !lastUpdate.IsZero() {
+			resp["last_update"] = lastUpdate.Format("2006-01-02 15:04:05")
 		}
 
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		fmt.Fprintf(w, `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Prometheus Exporter</title>
-<link rel="stylesheet" href="/script/semantic/semantic.min.css">
-<link rel="stylesheet" href="/main.css">
-<style>body{background:none}</style>
-</head>
-<body>
-<link rel="stylesheet" href="/darktheme.css">
-<script src="/script/darktheme.js"></script>
-<div class="ui container" style="padding-top:1.5em">
-<h2 class="ui header">Prometheus Exporter</h2>
-<p>Exposes Zoraxy statistical analysis data as Prometheus metrics.</p>
-%s
-<div class="ui segment">
-<h4>Metrics Endpoint</h4>
-<code>http://&lt;host&gt;:%d/metrics</code>
-<p style="margin-top:.5em;color:gray;font-size:.9em">Configure Prometheus to scrape this endpoint. Stats are fetched from Zoraxy every 30 seconds.</p>
-</div>
-<div class="ui segment">
-<h4>Today's Requests</h4>
-<div class="ui three statistics">
-<div class="statistic"><div class="value">%d</div><div class="label">Total</div></div>
-<div class="statistic"><div class="value">%d</div><div class="label">Valid</div></div>
-<div class="statistic"><div class="value">%d</div><div class="label">Errors</div></div>
-</div>
-</div>
-</div>
-</body>
-</html>`, statusDiv, metricsPort, total, valid, errs)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
 	}
 }
 
@@ -304,15 +280,11 @@ func main() {
 
 	// Plugin server on localhost only for Zoraxy UI integration.
 	mux := http.NewServeMux()
-	mux.HandleFunc(UI_PATH+"/", handleUI(metricsPort))
+	uiRouter := plugin.NewPluginEmbedUIRouter(PLUGIN_ID, &webContent, "/www", UI_PATH)
+	uiRouter.RegisterTerminateHandler(func() {}, mux)
+	mux.Handle(UI_PATH+"/", uiRouter.Handler())
+	mux.HandleFunc(UI_PATH+"/status", handleStatus(metricsPort))
 	mux.HandleFunc(METRICS_PATH, handleMetrics)
-	mux.HandleFunc(UI_PATH+"/term", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		go func() {
-			time.Sleep(100 * time.Millisecond)
-			os.Exit(0)
-		}()
-	})
 
 	pluginAddr := "127.0.0.1:" + strconv.Itoa(cfg.Port)
 	fmt.Println("Plugin server listening on", pluginAddr)
