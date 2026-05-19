@@ -54,3 +54,7 @@ exec "$(dirname "$0")/zoraxy-prometheus-exporter" -metrics-port=9200 "$@"
 ```bash
 go build -o zoraxy-prometheus-exporter .
 ```
+
+## Upstream Repo for plugins
+
+[Repo](https://github.com/aroz-online/zoraxy-official-plugins)
