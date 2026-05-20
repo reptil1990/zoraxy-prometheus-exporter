@@ -59,3 +59,35 @@ func ipVersion(ips map[string]int) map[string]int {
 	}
 	return out
 }
+
+// extractFileType derives a file extension bucket from each URL.
+// Strips query string and fragment, takes the last path segment,
+// and returns "Folder path" if empty, "API call" if extensionless,
+// or the lowercased extension otherwise.
+func extractFileType(urls map[string]int) map[string]int {
+	out := map[string]int{}
+	for u, count := range urls {
+		// Strip query and fragment
+		if i := strings.IndexAny(u, "?#"); i >= 0 {
+			u = u[:i]
+		}
+		// Last path segment
+		idx := strings.LastIndex(u, "/")
+		filename := u
+		if idx >= 0 {
+			filename = u[idx+1:]
+		}
+		var ext string
+		switch {
+		case filename == "":
+			ext = "Folder path"
+		case !strings.Contains(filename, "."):
+			ext = "API call"
+		default:
+			dot := strings.LastIndex(filename, ".")
+			ext = strings.ToLower(filename[dot+1:])
+		}
+		out[ext] += count
+	}
+	return out
+}

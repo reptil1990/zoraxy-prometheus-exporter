@@ -66,3 +66,35 @@ func TestIpVersion_EmptyInput(t *testing.T) {
 		t.Errorf("expected empty output, got %#v", out)
 	}
 }
+
+func TestExtractFileType(t *testing.T) {
+	in := map[string]int{
+		"/index.html":           10,
+		"/static/style.css?v=1": 5,
+		"/static/app.js#main":   3,
+		"/img/logo.PNG":         8,
+		"/api/v1/users":         20,
+		"/blog/":                7,
+		"":                      2,
+	}
+	out := extractFileType(in)
+	if out["html"] != 10 {
+		t.Errorf("html: expected 10, got %d", out["html"])
+	}
+	if out["css"] != 5 {
+		t.Errorf("css: expected 5, got %d", out["css"])
+	}
+	if out["js"] != 3 {
+		t.Errorf("js: expected 3, got %d", out["js"])
+	}
+	if out["png"] != 8 {
+		t.Errorf("png (lowercased): expected 8, got %d", out["png"])
+	}
+	if out["API call"] != 20 {
+		t.Errorf("API call: expected 20, got %d", out["API call"])
+	}
+	// "/blog/" -> filename "", "" -> filename "". Both go to "Folder path"
+	if out["Folder path"] != 9 {
+		t.Errorf("Folder path: expected 9 (7+2), got %d", out["Folder path"])
+	}
+}
