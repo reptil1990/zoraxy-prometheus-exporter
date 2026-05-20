@@ -43,4 +43,23 @@ jobs:
           artifacts: "./build/*"
           tag: "${{ github.ref_name }}"
           name: "${{ github.ref_name }}"
-          skipIfReleaseExists: true
+          generateReleaseNotes: true
+          allowUpdates: true
+          body: |
+            ## Extended request statistics (introduced in v1.1.0)
+
+            Seven new aggregated daily-summary series exposed by the exporter:
+
+            | Metric | Labels | Description |
+            |---|---|---|
+            | `zoraxy_requests_by_ip_version` | `version` (`ipv4`, `ipv6`) | Requests by client IP version |
+            | `zoraxy_requests_by_device` | `device` (`desktop`, `mobile`, `bot`) | Requests by client device class |
+            | `zoraxy_requests_by_browser` | `browser` | Requests by client browser family |
+            | `zoraxy_requests_by_os` | `os` | Requests by client OS family |
+            | `zoraxy_requests_by_os_version` | `os_version` | Requests by client OS version (top 20 + `other`) |
+            | `zoraxy_requests_by_file_type` | `type` | Requests by requested file extension |
+            | `zoraxy_requests_by_referer` | `host` | Requests by referer host (top 20 + `other`, `direct` for missing) |
+
+            The shipped Grafana dashboard (`grafana-dashboard.json`) includes matching panels for all seven series.
+
+            ---
