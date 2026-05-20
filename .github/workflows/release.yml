@@ -43,4 +43,5 @@ jobs:
           artifacts: "./build/*"
           tag: "${{ github.ref_name }}"
           name: "${{ github.ref_name }}"
-          skipIfReleaseExists: true
+          generateReleaseNotes: true
+          allowUpdates: true
