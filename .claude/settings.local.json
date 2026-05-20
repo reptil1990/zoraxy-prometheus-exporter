@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Set-Content *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git tag *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(gh run *)",
+      "Read(//c/Users/repti/OneDrive/Dokumente/Programming/zoraxy/**)",
+      "Bash(Get-ChildItem -Recurse -Filter \"*.go\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Skill(superpowers:using-superpowers)",
+      "Skill(superpowers:brainstorming)",
+      "Bash(gh api *)",
+      "Skill(superpowers:writing-plans)",
+      "Skill(superpowers:subagent-driven-development)",
+      "Bash(go get *)",
+      "Bash(go build *)",
+      "Bash(git commit *)",
+      "Bash(go list *)",
+      "Bash(go mod *)",
+      "Bash(git checkout *)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "proxmox"
+  ]
+}

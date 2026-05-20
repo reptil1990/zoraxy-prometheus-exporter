@@ -130,8 +130,20 @@ func fetchStats() {
 		}
 	}
 
+	browsers, osFamily, osVersions, devices := parseUA(summary.UserAgent)
+	agg := &AggregatedStats{
+		IPVersion:  ipVersion(summary.RequestClientIp),
+		Devices:    devices,
+		Browsers:   browsers,
+		OS:         osFamily,
+		OSVersions: osVersions,
+		FileTypes:  extractFileType(summary.RequestURL),
+		Referrers:  extractRefererHost(summary.Referer),
+	}
+
 	state.mu.Lock()
 	state.summary = &summary
+	state.aggregated = agg
 	state.netstat = ns
 	state.lastUpdate = time.Now()
 	state.lastError = ""
