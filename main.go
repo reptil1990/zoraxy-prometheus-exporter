@@ -159,7 +159,11 @@ func handleMetrics(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Fprintf(w, "# HELP %s %s\n# TYPE %s gauge\n", name, help, name)
 		for _, k := range sortedKeys(m) {
-			fmt.Fprintf(w, "%s{%s=\"%s\"} %d\n", name, labelKey, escapeLabel(k), m[k])
+			label := k
+			if label == "" {
+				label = "unknown"
+			}
+			fmt.Fprintf(w, "%s{%s=\"%s\"} %d\n", name, labelKey, escapeLabel(label), m[k])
 		}
 	}
 
@@ -245,7 +249,7 @@ func main() {
 		Type:          plugin.PluginType_Utilities,
 		VersionMajor:  1,
 		VersionMinor:  0,
-		VersionPatch:  5,
+		VersionPatch:  6,
 		UIPath:        UI_PATH,
 		PermittedAPIEndpoints: []plugin.PermittedAPIEndpoint{
 			{
