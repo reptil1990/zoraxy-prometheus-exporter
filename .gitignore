@@ -1,3 +1,12 @@
 .claude/
 docs/
 *_test.go
+
+# Build artifacts
+/build/
+/prometheus-exporter
+/prometheus-exporter.exe
+/prometheus-exporter_*
+
+# Local reference clone of upstream plugins repo
+/zoraxy-official-plugins/
