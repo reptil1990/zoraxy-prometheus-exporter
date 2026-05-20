@@ -1,6 +1,7 @@
 .claude/
 docs/
 *_test.go
+*.ps1
 
 # Build artifacts
 /build/
