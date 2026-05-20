@@ -2,6 +2,7 @@ package main
 
 import (
 	"sort"
+	"strings"
 )
 
 // topNWithOther keeps the n highest-count entries from m and folds the rest
@@ -41,6 +42,20 @@ func topNWithOther(m map[string]int, n int) map[string]int {
 	}
 	if other > 0 {
 		out["other"] = other
+	}
+	return out
+}
+
+// ipVersion buckets each IP into "ipv4" or "ipv6" by checking for ':'.
+// Counts are summed (request counts, not unique IPs).
+func ipVersion(ips map[string]int) map[string]int {
+	out := map[string]int{}
+	for ip, count := range ips {
+		if strings.Contains(ip, ":") {
+			out["ipv6"] += count
+		} else {
+			out["ipv4"] += count
+		}
 	}
 	return out
 }

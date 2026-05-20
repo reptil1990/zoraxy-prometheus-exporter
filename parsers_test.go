@@ -40,3 +40,29 @@ func TestTopNWithOther_AboveCap(t *testing.T) {
 		t.Fatalf("expected y=25, got %d", out["y"])
 	}
 }
+
+func TestIpVersion(t *testing.T) {
+	in := map[string]int{
+		"127.0.0.1":   10,
+		"192.168.1.1": 5,
+		"::1":         3,
+		"2001:db8::1": 7,
+	}
+	out := ipVersion(in)
+	if out["ipv4"] != 15 {
+		t.Errorf("expected ipv4=15, got %d", out["ipv4"])
+	}
+	if out["ipv6"] != 10 {
+		t.Errorf("expected ipv6=10, got %d", out["ipv6"])
+	}
+	if len(out) != 2 {
+		t.Errorf("expected 2 buckets, got %d (%#v)", len(out), out)
+	}
+}
+
+func TestIpVersion_EmptyInput(t *testing.T) {
+	out := ipVersion(map[string]int{})
+	if len(out) != 0 {
+		t.Errorf("expected empty output, got %#v", out)
+	}
+}
