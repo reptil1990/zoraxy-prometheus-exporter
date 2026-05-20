@@ -13,6 +13,13 @@ A [Zoraxy](https://github.com/tobychui/zoraxy) plugin that exports statistical a
 | `zoraxy_requests_by_country{country=...}` | gauge | Requests by origin country ISO code |
 | `zoraxy_requests_by_downstream{hostname=...}` | gauge | Requests by downstream hostname |
 | `zoraxy_requests_by_upstream{hostname=...}` | gauge | Requests by upstream hostname |
+| `zoraxy_requests_by_ip_version{version=...}` | gauge | Requests by client IP version (`ipv4`, `ipv6`) |
+| `zoraxy_requests_by_device{device=...}` | gauge | Requests by client device class (`desktop`, `mobile`, `bot`) |
+| `zoraxy_requests_by_browser{browser=...}` | gauge | Requests by client browser family |
+| `zoraxy_requests_by_os{os=...}` | gauge | Requests by client OS family |
+| `zoraxy_requests_by_os_version{os_version=...}` | gauge | Requests by client OS version (top 20 + `other`) |
+| `zoraxy_requests_by_file_type{type=...}` | gauge | Requests by requested file extension |
+| `zoraxy_requests_by_referer{host=...}` | gauge | Requests by referer host (top 20 + `other`, `direct` for missing) |
 | `zoraxy_network_rx_bits_total` | counter | Accumulated received bits (all interfaces) |
 | `zoraxy_network_tx_bits_total` | counter | Accumulated transmitted bits (all interfaces) |
 | `zoraxy_stats_last_update_unix` | gauge | Unix timestamp of last successful stats fetch |
