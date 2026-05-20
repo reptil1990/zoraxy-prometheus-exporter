@@ -4,6 +4,8 @@ import (
 	"net/url"
 	"sort"
 	"strings"
+
+	"github.com/mssola/user_agent"
 )
 
 // topNWithOther keeps the n highest-count entries from m and folds the rest
@@ -108,4 +110,64 @@ func extractRefererHost(referers map[string]int) map[string]int {
 		hosts[host] += count
 	}
 	return topNWithOther(hosts, 20)
+}
+
+// parseUA aggregates raw User-Agent strings into four low-cardinality maps:
+// browsers, os family, os+version (top 20 + other), and device class.
+//
+// Buckets:
+//   - devices: "bot" (Bot() == true) overrides everything; otherwise
+//     "mobile" if ua.Mobile(), else "desktop"
+//   - browsers: ua.Browser(); empty -> "Unknown"; if bot -> "Bot"
+//   - os: ua.OSInfo().Name; empty -> "Unknown"
+//   - osVersions: Name + " " + Version (Name only if Version empty);
+//     empty Name -> entry skipped; then capped via topNWithOther.
+func parseUA(uas map[string]int) (browsers, os, osVersions, devices map[string]int) {
+	browsers = map[string]int{}
+	os = map[string]int{}
+	osVersionsRaw := map[string]int{}
+	devices = map[string]int{}
+
+	for s, count := range uas {
+		ua := user_agent.New(s)
+
+		// Device class
+		switch {
+		case ua.Bot():
+			devices["bot"] += count
+		case ua.Mobile():
+			devices["mobile"] += count
+		default:
+			devices["desktop"] += count
+		}
+
+		// Browser
+		browserName, _ := ua.Browser()
+		switch {
+		case ua.Bot():
+			browsers["Bot"] += count
+		case browserName == "":
+			browsers["Unknown"] += count
+		default:
+			browsers[browserName] += count
+		}
+
+		// OS family + version
+		info := ua.OSInfo()
+		osName := info.Name
+		if osName == "" {
+			os["Unknown"] += count
+			continue
+		}
+		os[osName] += count
+
+		versionKey := osName
+		if info.Version != "" {
+			versionKey = osName + " " + info.Version
+		}
+		osVersionsRaw[versionKey] += count
+	}
+
+	osVersions = topNWithOther(osVersionsRaw, 20)
+	return
 }

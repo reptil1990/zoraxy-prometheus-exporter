@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -135,5 +136,83 @@ func TestExtractRefererHost_TopN(t *testing.T) {
 	}
 	if len(out) > 21 {
 		t.Errorf("expected at most 21 entries (20 + other), got %d", len(out))
+	}
+}
+
+func TestParseUA_DesktopChromeWindows(t *testing.T) {
+	in := map[string]int{
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36": 100,
+	}
+	browsers, os, osVersions, devices := parseUA(in)
+	if browsers["Chrome"] != 100 {
+		t.Errorf("expected Chrome=100, got %d (browsers=%#v)", browsers["Chrome"], browsers)
+	}
+	if os["Windows"] == 0 {
+		t.Errorf("expected Windows in os map, got %#v", os)
+	}
+	if devices["desktop"] != 100 {
+		t.Errorf("expected desktop=100, got %d (devices=%#v)", devices["desktop"], devices)
+	}
+	// OSVersions should contain a Windows-* key with count 100
+	found := false
+	for k, v := range osVersions {
+		if strings.HasPrefix(k, "Windows") && v == 100 {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("expected a Windows version entry with count 100, got %#v", osVersions)
+	}
+}
+
+func TestParseUA_MobileSafariIOS(t *testing.T) {
+	in := map[string]int{
+		"Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1": 50,
+	}
+	_, _, _, devices := parseUA(in)
+	if devices["mobile"] != 50 {
+		t.Errorf("expected mobile=50, got %d (devices=%#v)", devices["mobile"], devices)
+	}
+}
+
+func TestParseUA_Bot(t *testing.T) {
+	in := map[string]int{
+		"Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)": 30,
+	}
+	browsers, _, _, devices := parseUA(in)
+	if devices["bot"] != 30 {
+		t.Errorf("expected bot=30, got %d (devices=%#v)", devices["bot"], devices)
+	}
+	if browsers["Bot"] != 30 {
+		t.Errorf("expected Bot bucket=30, got %d (browsers=%#v)", browsers["Bot"], browsers)
+	}
+}
+
+func TestParseUA_EmptyString(t *testing.T) {
+	in := map[string]int{"": 5}
+	browsers, os, _, devices := parseUA(in)
+	// Empty UA: should not crash; reasonable to bucket as Unknown
+	if browsers["Unknown"] != 5 {
+		t.Errorf("expected Unknown=5, got %#v", browsers)
+	}
+	if os["Unknown"] != 5 {
+		t.Errorf("expected Unknown OS=5, got %#v", os)
+	}
+	if devices["desktop"] != 5 {
+		// Empty UA is neither mobile nor bot, so falls into desktop.
+		t.Errorf("expected desktop=5 for empty UA, got %#v", devices)
+	}
+}
+
+func TestParseUA_OSVersionsCapped(t *testing.T) {
+	in := map[string]int{}
+	for i := 0; i < 5; i++ {
+		ua := "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/12" + string(rune('0'+i)) + ".0 Safari/537.36"
+		in[ua] = i + 1
+	}
+	_, _, osVersions, _ := parseUA(in)
+	if osVersions == nil {
+		t.Fatal("osVersions must not be nil")
 	}
 }
