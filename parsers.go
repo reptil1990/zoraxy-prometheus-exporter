@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/url"
 	"sort"
 	"strings"
 )
@@ -90,4 +91,21 @@ func extractFileType(urls map[string]int) map[string]int {
 		out[ext] += count
 	}
 	return out
+}
+
+// extractRefererHost extracts the host from each referer URL and folds the
+// long tail into an "other" bucket (top 20). Empty or invalid referers go
+// to "direct".
+func extractRefererHost(referers map[string]int) map[string]int {
+	hosts := map[string]int{}
+	for ref, count := range referers {
+		host := "direct"
+		if ref != "" {
+			if u, err := url.Parse(ref); err == nil && u.Hostname() != "" {
+				host = u.Hostname()
+			}
+		}
+		hosts[host] += count
+	}
+	return topNWithOther(hosts, 20)
 }

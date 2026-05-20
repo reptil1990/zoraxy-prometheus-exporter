@@ -98,3 +98,42 @@ func TestExtractFileType(t *testing.T) {
 		t.Errorf("Folder path: expected 9 (7+2), got %d", out["Folder path"])
 	}
 }
+
+func TestExtractRefererHost(t *testing.T) {
+	in := map[string]int{
+		"https://google.com/search?q=x": 10,
+		"https://www.bing.com":          5,
+		"http://example.com:8080/page":  3,
+		"":                              7,
+		"not-a-url":                     2,
+	}
+	out := extractRefererHost(in)
+	if out["google.com"] != 10 {
+		t.Errorf("google.com: expected 10, got %d", out["google.com"])
+	}
+	if out["www.bing.com"] != 5 {
+		t.Errorf("www.bing.com: expected 5, got %d", out["www.bing.com"])
+	}
+	if out["example.com"] != 3 {
+		t.Errorf("example.com (port stripped): expected 3, got %d", out["example.com"])
+	}
+	// empty + "not-a-url" both fall into "direct"
+	if out["direct"] != 9 {
+		t.Errorf("direct: expected 9 (7+2), got %d", out["direct"])
+	}
+}
+
+func TestExtractRefererHost_TopN(t *testing.T) {
+	in := map[string]int{}
+	for i := 0; i < 25; i++ {
+		host := string(rune('a'+i)) + ".com"
+		in["https://"+host] = i + 1
+	}
+	out := extractRefererHost(in)
+	if _, ok := out["other"]; !ok {
+		t.Fatalf("expected 'other' bucket for 25 hosts, got: %#v", out)
+	}
+	if len(out) > 21 {
+		t.Errorf("expected at most 21 entries (20 + other), got %d", len(out))
+	}
+}
