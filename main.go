@@ -204,6 +204,17 @@ func handleMetrics(w http.ResponseWriter, r *http.Request) {
 	writeLabeledGauge("zoraxy_requests_by_downstream", "Requests by downstream hostname today", "hostname", s.Downstreams)
 	writeLabeledGauge("zoraxy_requests_by_upstream", "Requests by upstream hostname today", "hostname", s.Upstreams)
 
+	if state.aggregated != nil {
+		a := state.aggregated
+		writeLabeledGauge("zoraxy_requests_by_ip_version", "Requests by client IP version today", "version", a.IPVersion)
+		writeLabeledGauge("zoraxy_requests_by_device", "Requests by client device class today", "device", a.Devices)
+		writeLabeledGauge("zoraxy_requests_by_browser", "Requests by client browser today", "browser", a.Browsers)
+		writeLabeledGauge("zoraxy_requests_by_os", "Requests by client operating system today", "os", a.OS)
+		writeLabeledGauge("zoraxy_requests_by_os_version", "Requests by client OS version today (top 20 + other)", "os_version", a.OSVersions)
+		writeLabeledGauge("zoraxy_requests_by_file_type", "Requests by requested file extension today", "type", a.FileTypes)
+		writeLabeledGauge("zoraxy_requests_by_referer", "Requests by referer host today (top 20 + other)", "host", a.Referrers)
+	}
+
 	if state.netstat != nil {
 		fmt.Fprintln(w, "# HELP zoraxy_network_rx_bits_total Accumulated received bits across all network interfaces")
 		fmt.Fprintln(w, "# TYPE zoraxy_network_rx_bits_total counter")
