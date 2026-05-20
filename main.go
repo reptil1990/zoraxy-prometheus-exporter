@@ -26,16 +26,21 @@ const (
 )
 
 // DailySummaryExport mirrors the structure returned by /api/stats/summary.
-// High-cardinality fields (RequestClientIp, Referer, UserAgent, RequestURL)
-// are intentionally omitted to avoid label cardinality explosion in Prometheus.
+// The high-cardinality maps (RequestClientIp, Referer, UserAgent, RequestURL)
+// are fetched as raw strings and aggregated into low-cardinality buckets
+// in parsers.go before being exported as Prometheus metrics.
 type DailySummaryExport struct {
-	TotalRequest  int64          `json:"TotalRequest"`
-	ErrorRequest  int64          `json:"ErrorRequest"`
-	ValidRequest  int64          `json:"ValidRequest"`
-	ForwardTypes  map[string]int `json:"ForwardTypes"`
-	RequestOrigin map[string]int `json:"RequestOrigin"`
-	Downstreams   map[string]int `json:"Downstreams"`
-	Upstreams     map[string]int `json:"Upstreams"`
+	TotalRequest    int64          `json:"TotalRequest"`
+	ErrorRequest    int64          `json:"ErrorRequest"`
+	ValidRequest    int64          `json:"ValidRequest"`
+	ForwardTypes    map[string]int `json:"ForwardTypes"`
+	RequestOrigin   map[string]int `json:"RequestOrigin"`
+	Downstreams     map[string]int `json:"Downstreams"`
+	Upstreams       map[string]int `json:"Upstreams"`
+	RequestClientIp map[string]int `json:"RequestClientIp"`
+	UserAgent       map[string]int `json:"UserAgent"`
+	Referer         map[string]int `json:"Referer"`
+	RequestURL      map[string]int `json:"RequestURL"`
 }
 
 type NetStat struct {
@@ -43,9 +48,20 @@ type NetStat struct {
 	TX int64 `json:"TX"`
 }
 
+type AggregatedStats struct {
+	IPVersion  map[string]int // "ipv4" | "ipv6"
+	Devices    map[string]int // "desktop" | "mobile" | "bot"
+	Browsers   map[string]int // "Chrome", "Firefox", ...
+	OS         map[string]int // "Windows", "macOS", ...
+	OSVersions map[string]int // "Windows 10", ... (Top 20 + "other")
+	FileTypes  map[string]int // "html", "css", "Folder path", "API call"
+	Referrers  map[string]int // "google.com", ..., "direct", "other"
+}
+
 type metricsState struct {
 	mu         sync.RWMutex
 	summary    *DailySummaryExport
+	aggregated *AggregatedStats
 	netstat    *NetStat
 	lastUpdate time.Time
 	lastError  string
