@@ -287,8 +287,8 @@ func main() {
 		URL:           "https://github.com/reptil1990/zoraxy-prometheus-exporter",
 		Type:          plugin.PluginType_Utilities,
 		VersionMajor:  1,
-		VersionMinor:  0,
-		VersionPatch:  6,
+		VersionMinor:  1,
+		VersionPatch:  0,
 		UIPath:        UI_PATH,
 		PermittedAPIEndpoints: []plugin.PermittedAPIEndpoint{
 			{
